@@ -17,6 +17,11 @@ namespace SharpAsm
 
         private const int PAGE_SIZE = 0x1000;
 
+        private const uint MEM_COMMIT = 0x1000;
+        private const uint MEM_RELEASE = 0x8000;
+        private const uint PAGE_EXECUTE_READWRITE = 0x40;
+
+
         [DllImport("kernel32.dll", SetLastError = true)]
         static extern IntPtr VirtualAlloc(IntPtr addr, UIntPtr size, uint allocType, uint prot);
 
@@ -41,14 +46,14 @@ namespace SharpAsm
 
         private bool AllocPage()
         {
-            codePage = VirtualAlloc(IntPtr.Zero, new UIntPtr(PAGE_SIZE), 0x1000, 0x40);
+            codePage = VirtualAlloc(IntPtr.Zero, new UIntPtr(PAGE_SIZE), MEM_COMMIT, PAGE_EXECUTE_READWRITE);
 
             return codePage != IntPtr.Zero;
         }
 
         private void FreePage()
         {
-            VirtualFree(codePage,UIntPtr.Zero,0x8000);
+            VirtualFree(codePage,UIntPtr.Zero,MEM_RELEASE);
             codePage = IntPtr.Zero;
         }
 
